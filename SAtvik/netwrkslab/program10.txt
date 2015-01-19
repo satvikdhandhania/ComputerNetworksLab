@@ -1,0 +1,114 @@
+
+exp-10 changed to echo server not the one in cyclesheet
+
+client
+************************************
+#include<string.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<netdb.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(int argc, char *argv[])
+{
+int sock, length, n;
+struct sockaddr_in server, client;
+struct hostent *hp;
+char buffer1[1000],buffer2[1000];
+sock= socket(AF_INET, SOCK_DGRAM, 0);
+if (sock < 0)
+{
+perror("sock");
+exit(1);
+}
+server.sin_family = AF_INET;
+hp = gethostbyname(argv[1]);
+if (hp==0)
+{
+perror("Unknown host");
+exit(1);
+}
+server.sin_port = htons(atoi(argv[2]));
+server.sin_addr.s_addr=INADDR_ANY;
+length=sizeof(struct sockaddr_in);
+printf("Please enter the message: ");
+fflush(stdin);
+gets(buffer1);
+n=sendto(sock,buffer1,strlen(buffer1),0,&server,length);
+if (n<0)
+{
+perror("sendto");
+exit(1);
+}
+printf("message sent\n");
+fflush(stdin);
+n=recvfrom(sock,buffer2,1000,0,&client,&length);
+if(n<0)
+{
+perror("recvfrom");
+exit(1);
+}
+printf("msg from ser : %s",buffer2);
+close(sock);
+}
+
+
+
+
+..........................................
+
+
+
+server
+************************************************
+
+#include<string.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<stdio.h>
+#include<stdlib.h>
+int main(int argc, char *argv[])
+{
+int sock, length, clientlen, n;
+struct sockaddr_in server;
+struct sockaddr_in client;
+char buf1[1000],buf2[1000];
+sock=socket(AF_INET, SOCK_DGRAM, 0);
+if (sock < 0)
+{
+perror("sock");
+exit(1);
+}
+length = sizeof(server);
+server.sin_family=AF_INET;
+server.sin_addr.s_addr=INADDR_ANY;
+server.sin_port=htons(atoi(argv[1]));
+if (bind(sock,(struct sockaddr *)&server,length)<0)
+{
+perror("bind");
+exit(1);
+}
+clientlen = sizeof(struct sockaddr_in);
+
+n = recvfrom(sock,buf1,1000,0,&client,&clientlen);
+if (n < 0)
+{
+perror("recvfrom");
+exit(1);
+}
+printf("msg recieved from cli...");
+strcpy(buf2,buf1);
+n=sendto(sock,buf2,strlen(buf2),0,&client,clientlen);
+if(n<0)
+{
+perror("sendto");
+exit(1);
+}
+fflush(stdin);
+
+close(sock);
+}

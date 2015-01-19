@@ -1,0 +1,27 @@
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<fcntl.h>
+#include<stdio.h>
+#include<string.h>
+#include<time.h>
+int main()
+{
+int sfd;
+time_t t;
+t=time(NULL);
+struct sockaddr_in dest_addr;
+sfd=socket(AF_INET, SOCK_STREAM,0);
+dest_addr.sin_family=AF_INET;
+dest_addr.sin_port=htons(3800);
+dest_addr.sin_addr.s_addr=inet_addr("127.0.0.1");
+connect(sfd,(struct sockaddr*)&dest_addr, sizeof(struct sockaddr));
+char msg[100];
+strcpy(msg,ctime(&t));
+int w=write(sfd,msg, strlen(msg));
+fflush(stdin);
+close(sfd);
+}
+~                                                                                                                                                                       
+~                                                                                                                                                                       
+~         

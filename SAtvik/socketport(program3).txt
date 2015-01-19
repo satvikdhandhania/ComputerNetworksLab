@@ -1,0 +1,16 @@
+#include<stdio.h> 
+#include<string.h> 
+#include<stdlib.h> 
+#include<sys/socket.h>
+#include<netdb.h>    
+#include<arpa/inet.h>
+main()
+{
+struct servent *s = getservbyname("http", 0);
+printf("%s %d %s\n\n ", s->s_name, ntohs(s->s_port), s->s_proto);
+
+int a=23;
+s = getservbyport(ntohs(a),0);
+printf("%s %d %s\n\n ", s->s_name,ntohs(s->s_port), s->s_proto);
+}
+                                                             

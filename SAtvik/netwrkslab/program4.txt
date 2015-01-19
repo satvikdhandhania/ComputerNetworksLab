@@ -1,0 +1,47 @@
+exp4
+
+
+#include<ctype.h>
+#include<stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int check_ip(char *p)
+{
+    while(*p != '\0')
+    {
+        if(isxdigit(*p)==0)
+        {
+            if(ispunct(*p)==0)
+            {
+                return 0;
+            }
+        }
+        p++;
+    }
+    return 1;
+}
+int main(int argc,char *argv[])
+{
+   // char ip[16]="127.0.0.1";
+    //char name[16]="123google.com";
+    //char ipport[22]="127.0.0.1:8080";
+    //char ipv6[50]="2001:db8:85a3:0:0:8a2e:370:7334";
+    /*Check if the string "ip" is an ip address or not*/
+struct hostent *host;
+struct in_addr address;
+if(check_ip(argv[1])==1)
+{
+inet_aton(argv[1],&address);
+host=gethostbyaddr((const char*)&address.s_addr,sizeof(address.s_addr),AF_INET);
+printf("Host name= %s",host->h_name);
+}
+else
+{
+host=gethostbyname(argv[1]);
+address.s_addr=*((unsigned long*)host->h_addr);
+printf("\n%s %s %s",argv[1],inet_ntoa(address),*(host->h_aliases));
+}
+    return 0;
+}

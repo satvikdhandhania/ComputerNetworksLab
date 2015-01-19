@@ -1,0 +1,36 @@
+exp2.a)
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc,char *argv[])
+{
+int i;
+struct hostent *host;
+struct in_addr address;
+host=gethostbyname(argv[1]);
+for(i=0;host->h_addr_list[i]!=NULL;i++)
+{
+address.s_addr=*((unsigned long*)host->h_addr_list[i]);
+printf("\n%s %s %s",argv[i+1],inet_ntoa(address),*(host->h_aliases));
+}
+}
+
+
+exp2.b)
+
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc,char *argv[])
+{
+int i;
+struct hostent *host;
+struct in_addr address;
+inet_aton(argv[1],&address);
+host=gethostbyaddr((const char*)&address.s_addr,sizeof(address.s_addr),AF_INET);
+printf("Host name= %s\n",host->h_name);
+}

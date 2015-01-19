@@ -1,0 +1,90 @@
+exp6
+
+client
+*****************************
+#include<stdio.h>
+#include<sys/types.h>
+#include<netdb.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<stdlib.h>
+int main(int args,char *argv[])
+
+{
+char buf[100];
+int sockfd,connfd;
+int servlen;
+struct sockaddr_in cli,ser;
+struct hostent *he;
+//struct in_addr address;
+he=gethostbyname(argv[1]);
+servlen=sizeof(ser);
+//address.s_addr=*((unsigned long *)he->h_addr_list[0]);
+sockfd=socket(AF_INET,SOCK_STREAM,0);
+if(sockfd<0)
+{
+perror("socket");
+exit(1);
+}
+ser.sin_addr=*((struct in_addr *)he->h_addr);
+ser.sin_port=htons(atoi(argv[2]));
+ser.sin_family=AF_INET;
+if((connect(sockfd,(struct sockaddr *)&ser,servlen))<0)
+{
+perror("connect");
+exit(0);
+}
+read(sockfd,buf,100);
+printf("\nTIME= %s",buf);
+}
+
+
+server
+********************************
+
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<time.h>
+#include<stdlib.h>
+#include<string.h>
+int main(int argc,char *argv[])
+{
+int sockfd,connfd;
+int clilen;
+time_t t;
+
+char buf[100];
+struct sockaddr_in cli,ser;
+t=time(NULL);
+sockfd=socket(AF_INET,SOCK_STREAM,0);
+if(sockfd<0)
+{
+perror("sockfd");
+exit(1);
+}
+ser.sin_addr.s_addr=INADDR_ANY;
+ser.sin_port=htons(atoi(argv[1]));
+ser.sin_family=AF_INET;
+if(bind(sockfd,(struct sockaddr *)&ser,sizeof(ser))<0)
+{
+perror("bind");
+exit(0);
+}
+if(listen(sockfd,5)<0)
+{
+perror("listen");
+exit(0);
+}
+clilen=sizeof(cli);
+connfd=accept(sockfd,(struct sockaddr *)&cli,&clilen);
+if(connfd<0)
+{
+perror("accept");
+exit(0);
+}
+strcpy(buf,ctime(&t));
+write(connfd,buf,100);
+return 0;
+}

@@ -1,0 +1,14 @@
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+#include<netinet/in.h>
+main()
+{
+struct hostent *h1;
+struct in_addr a;
+inet_aton("10.10.151.12",&a);
+h1=gethostbyaddr(&a,4,AF_INET);
+printf("%s",h1->h_name);
+}

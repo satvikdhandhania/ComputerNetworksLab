@@ -1,0 +1,73 @@
+//USING MULTITHREAD
+//Server
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<fcntl.h>
+#include<stdio.h>
+#include<string.h>
+#include<arpa/inet.h>
+#include<pthread.h>
+#include<sys/ioctl.h>
+void* yup(void *);
+int main()
+{
+int sfd, cfd,bread;
+int size;
+pthread_t t1;
+struct sockaddr_in my_addr;
+struct sockaddr_in con_add;
+sfd=socket(AF_INET, SOCK_STREAM,0);
+my_addr.sin_family=AF_INET;
+my_addr.sin_port=htons(3800);
+my_addr.sin_addr.s_addr=inet_addr("127.0.0.1");
+bind(sfd,(struct sockaddr*)&my_addr, sizeof(struct sockaddr));
+listen(sfd,5);
+size=sizeof(con_add);
+while(1)
+{
+cfd=accept(sfd, (struct sockaddr*)&con_add,&size);
+pthread_create(&t1,NULL,yup,(void *) cfd);
+}
+pthread_detach(t1);
+sched_yield();
+}
+
+void* yup(void *tq)
+{
+char buf[100];
+int re,bread;
+re = (int)tq;
+bread=read(re,buf,100);
+printf("%s\n",buf);
+fflush(stdin);
+close(re);
+}
+
+
+
+//Client
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<fcntl.h>
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+int sfd;
+char msg[100];
+struct sockaddr_in dest_addr;
+sfd=socket(AF_INET, SOCK_STREAM,0);
+dest_addr.sin_family=AF_INET;
+dest_addr.sin_port=htons(3800);
+dest_addr.sin_addr.s_addr=inet_addr("127.0.0.1");
+connect(sfd,(struct sockaddr*)&dest_addr, sizeof(struct sockaddr));
+
+printf("Enter your Message:");
+fflush(stdin);
+gets(&msg);
+int w=write(sfd,msg, strlen(msg));
+fflush(stdin);
+close(sfd);
+}

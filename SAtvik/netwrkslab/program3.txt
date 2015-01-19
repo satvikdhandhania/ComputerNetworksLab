@@ -1,0 +1,29 @@
+exp3.a)
+
+
+#include<stdlib.h>
+#include<stdio.h>
+#include<netdb.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+int main(int argc,char *argv[])
+{
+struct servent *s;
+s=getservbyname("ftp","tcp");
+printf("%d",ntohs(s->s_port));
+return 0;
+}
+
+
+exp3.b)
+
+#include<stdlib.h>
+#include<stdio.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc,char *argv[])
+{
+struct servent *s;
+s=getservbyport(htons(21),"tcp");
+printf("Network service= %s\n",s->s_name);
+}
